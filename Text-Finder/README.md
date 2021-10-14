@@ -5,3 +5,5 @@ Enter the word to be searched and the directory containing the files need to be 
 
 A Threaded version of this program is also available but it runs slower than original.
 As it requires CPU processing power and hence it is pointless to use threads.
+
+Processes can be used if necessary.
