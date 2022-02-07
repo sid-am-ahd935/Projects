@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Login Page</title>
+    <style type="text/css">
+        button{
+            background-color: Orange;
+            color: white;
+            padding: 14px 20px;
+            margin: 8px 0;
+            border: none;
+            cursor: pointer;
+            width: 100%;
+        }
+        button:hover {
+            opacity: 0.8;
+        }
+        input[type=text], input[type=password], input[type=email] {
+            padding: 12px 20px;
+            margin: 8px 0;
+            border: 2px solid green;
+            cursor: pointer;
+            width: 100%;
+            display: inline-block;
+            box-sizing: border-box;
+        }
+    </style>
+</head>
+<body>
+    <h1> Login </h1>
+    <form action="login" method="post" accept-charset="utf-8">
+        {% csrf_token %}
+        <table>
+            <tr>
+                <td>
+                    <label for=""> Email: </label>
+                </td>
+                <td>
+                    <input type="email" name="email" placeholder="Enter a Email"/>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <label for=""> Password: </label>
+                </td>
+                <td>
+                    <input type="password" name="password" placeholder="Enter The Password">
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <div class="container" style="background-color:#f1f1f1">
+                        <span style="float: right; padding-top: 16px;"> Forgot <a href="request-reset-email">password?</a></span>
+                    </div>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <button type="submit"> Login </button>
+                </td>
+            </tr>
+        </table>
+    </form>
+    Create a new account? <a href="register"> Register </a>
+    <br>
+    <a href="home"> Home </a>
+</body>
+</html>
