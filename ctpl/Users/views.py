@@ -26,7 +26,7 @@ def student(request):
 def teacher(request):
     return render(request, "teacher.html")
 
-@allowed_users(allowed_roles=["admin"])
+@allowed_users(allowed_roles=["2admin"])
 def admin(request):
     return render(request, "admin.html")
 
@@ -171,7 +171,7 @@ class UserView(APIView):
         user = User.objects.filter(id = payload['id']).first()
 
         serializer = UserSerializer(user)
-
+        # print(user.role)
         return Response(serializer.data)
 
 
@@ -213,11 +213,7 @@ class RequestPasswordReset(generics.GenericAPIView):
             }
             Util.send_email(data)
             
-            response = render(request,'''
-            <!DOCTYPE html><html lang="en">
-            <head><title> Email Sent!!! </title></head>
-            <body> <h6>{{ status }}</h6> <br> <h3>{{ message }}</h3></body></html>
-            ''')
+            response = redirect("home")
             response.data = {
                 "status":'Success',
                 "message" : "We have sent you a password reset email. Please click on the verification link to proceed further."

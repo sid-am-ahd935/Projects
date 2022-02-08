@@ -10,7 +10,7 @@ class Util:
             body= data["email_body"],
             to= (data['to_email'],),
         )
-        print(email, 99191919, data)
+        # print(email, 99191919, data)
         email.send()
 
 
@@ -18,7 +18,8 @@ def allowed_users(allowed_roles=[]):
     def decorator(view_func):
         def wrapper_func(request, *args, **kwargs):
 
-            # print("Working:", allowed_roles)
+            print("Working:", allowed_roles)
+            print(request.user.groups.all())
             group = None
             if request.user.groups.exists():
                 group = request.user.groups.all()[0].name
