@@ -46,19 +46,6 @@ class RegisterView(APIView):
 
     def post(self, request):
         serializer = UserSerializer(data=request.data)
-        # valid = serializer.is_valid()
-        # if not valid:
-        #     return render(
-        #         request,
-        #         "invalid.html",
-        #         {
-        #             "status" : f"{valid}",
-        #             "redirect_url" : "login",
-        #             "redirect_to" : "Login",
-        #         }
-        #     )
-        # serializer.save()
-        # return Response(serializer.data)
 
         try:
             serializer.is_valid(raise_exception=True)
@@ -226,21 +213,25 @@ class RequestPasswordReset(generics.GenericAPIView):
             }
             Util.send_email(data)
             
-            response = redirect("reset_password.html")
+            response = render(request,'''
+            <!DOCTYPE html><html lang="en">
+            <head><title> Email Sent!!! </title></head>
+            <body> <h6>{{ status }}</h6> <br> <h3>{{ message }}</h3></body></html>
+            ''')
             response.data = {
                 "status":'Success',
-                "message" : "We have sent you a password reset email."
+                "message" : "We have sent you a password reset email. Please click on the verification link to proceed further."
             }
             return response
         elif  not User.objects.filter(email = email).exists():
-            response = redirect("home.html")
+            response = render(request, "home.html")
             response.data = {
                 "status" : status.HTTP_403_FORBIDDEN,
                 "message" : "User not found. Please Register."
             }
             return response
         else:
-            response = redirect("home.html")
+            response = render(request, "home.html")
             response.data = {
                 "status" : status.HTTP_403_FORBIDDEN,
                 "message" : "Unknown Error. Please try again."
@@ -248,4 +239,59 @@ class RequestPasswordReset(generics.GenericAPIView):
             return response
 
 class PasswordTokenCheckAPI(APIView):
-    pass
+    def get(self, request, uidb64, token):
+        try:
+            id = smart_str(urlsafe_base64_decode(uidb64))
+            user = User.objects.get(id=id)
+            
+            if not PasswordResetTokenGenerator().check_token(user, token):
+                response = redirect("home")
+                response.data = {
+                    "status" : status.HTTP_403_FORBIDDEN,
+                    "message" : "User not found. Please Register."
+                }
+                return response
+            
+            response = render(request, "reset_password.html")
+            response.data = {
+                "status" : status.HTTP_200_OK,
+                "message" : "Credentials are valid"
+            }
+            return response
+        except DjangoUnicodeDecodeError:
+            response = render("invalid.html")
+            response.data = {
+                "status" : status.HTTP_403_FORBIDDEN,
+                "message" : "Token is not valid. Please request a new one."
+            }
+    
+    def post(self, request, uidb64, token):
+        password = request.data['new-pass']
+        try:
+            id = force_str(urlsafe_base64_decode(uidb64))
+            user = User.objects.get(id=id)
+            
+            if not PasswordResetTokenGenerator().check_token(user, token):
+                response = redirect("home")
+                response.data = {
+                    "status" : status.HTTP_403_FORBIDDEN,
+                    "message" : "User not found. Please Register."
+                }
+                return response
+            
+            user.set_password(password)
+            user.save()
+            
+            response = redirect("home")
+            response.data = {
+                "status" : status.HTTP_200_OK,
+                "message" : "New Password is created. Login with the new password."
+            }
+            return response
+        except DjangoUnicodeDecodeError:
+            response = render("invalid.html")
+            response.data = {
+                "status" : status.HTTP_403_FORBIDDEN,
+                "message" : "Token is not valid. Please request a new one."
+            }
+    
