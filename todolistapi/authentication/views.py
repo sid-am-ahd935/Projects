@@ -10,7 +10,7 @@ from .jwt import JWTAuthentication
 class AuthUserAPIView(GenericAPIView):
 
     permission_classes = (permissions.IsAuthenticated, )
-    # authentication_classes = (JWTAuthentication, )
+    authentication_classes = (JWTAuthentication, )
 
     def get(self, request):
         user = request.user
